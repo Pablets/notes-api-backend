@@ -10,7 +10,7 @@ GET http://localhost:3001/api/notes/1
 ###
 # Delete a single note by id PRIVATE
 
-DELETE http://localhost:3001/api/notes/1
+DELETE http://localhost:3001/api/notes/1 HTTP/1.1
 
 ###
 # Create a note
