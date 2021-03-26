@@ -5,12 +5,12 @@ GET http://localhost:3001/api/notes
 ###
 # Get a note by ID - PUBLIC
 
-GET http://localhost:3001/api/notes/1
+GET http://localhost:3001/api/notes/605bef7921647333073254b3
 
 ###
 # Delete a single note by id PRIVATE
 
-DELETE http://localhost:3001/api/notes/605ab983a667fd27077bfd68 HTTP/1.1
+DELETE http://localhost:3001/api/notes/605cb90073180e08bb2820b6 HTTP/1.1
 
 ###
 # Create a note
@@ -19,17 +19,18 @@ POST http://localhost:3001/api/notes HTTP/1.1
 Content-Type: application/json
 
 {
-    "content":"esto es una nota"
+    "content":"asdadddd"
 }
 
 
 ###
 # Update a note
 
-PUT http://localhost:3001/api/notes/3 HTTP/1.1
+PUT http://localhost:3001/api/notes/605cb7b916b56407d16a9a52 HTTP/1.1
 Content-Type: application/json
 
 {
+    "content": "Actualizando esta nota",
     "important": true
 }
 

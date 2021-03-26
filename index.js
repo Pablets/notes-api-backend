@@ -1,66 +1,60 @@
 require('./mongo')
+require('dotenv').config()
 
 const express = require('express')
 const app = express()
 const cors = require('cors')
 const Note = require('./models/Note')
-const { response } = require('express')
+const notFound = require('./middlewares/notFound')
+const errorHandler = require('./middlewares/errorHandler')
 
-require('dotenv').config()
 app.use(cors())
 app.use(express.json())
-
-let notes = []
-
-const generateId = () => {
-  const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0
-  return maxId + 1
-}
 
 app.get('/', (req, res) => {
   res.send(`<h1>Hello World!!!</h1>`)
 })
 
-app.get('/api/notes', (req, res) => {
-  Note.find({}).then((notes) => {
-    res.json(notes)
-  })
+app.get('/api/notes', async (request, response) => {
+  const notes = await Note.find({})
+  response.json(notes)
 })
 
 app.get('/api/notes/:id', (req, res, next) => {
-  const id = req.params.id
+  const { id } = req.params
 
   Note.findById(id)
-    .then((note) => {
+    .then(note => {
       if (note) {
         return res.json(note)
       } else {
-        res.status(404).end
+        res.status(404).end()
       }
     })
-    .catch((err) => {
+    .catch(err => {
       next(err)
     })
 })
 
-app.delete('/api/notes/:id', (req, res, next) => {
+app.delete('/api/notes/:id', async (req, res, next) => {
   const id = req.params.id
 
-  Note.findByIdAndRemove(id)
-    .then((response) => {
-      response.status(204)
-    })
-    .catch((error) => next(error))
-
-  res.status(202).json(notes)
+  try {
+    await Note.findByIdAndDelete(id)
+      .then(() => {
+        res.status(204).end()
+      })
+  } catch (error) {
+    next(error)
+  }
 })
 
-app.post('/api/notes', (req, res) => {
+app.post('/api/notes', async (req, res, next) => {
   const note = req.body
 
   if (!note.content) {
     return res.status(400).json({
-      error: 'content missing',
+      error: 'required content missing',
     })
   }
 
@@ -69,43 +63,38 @@ app.post('/api/notes', (req, res) => {
     date: new Date(),
     important: note.important || false,
   })
-
-  newNote.save().then((savedNote) => {
+  try {
+    const savedNote = await newNote.save()
     res.json(savedNote)
-  })
-
-  res.json(note)
+  } catch (error) {
+    next(error)
+  }
 })
 
-app.put('/api/notes/:id', (req, res) => {
-  const id = Number(req.params.id)
+app.put('/api/notes/:id', (req, res, next) => {
+  const id = req.params.id
 
-  const body = req.body
+  const note = req.body
 
-  if (typeof body.important === 'undefined') {
-    return res.status(400).json({
-      error: 'content missing',
+  const newNoteInfo = {
+    content: note.content,
+    important: note.important,
+  }
+
+  Note.findByIdAndUpdate(id, newNoteInfo, { new: true })
+    .then(result => {
+      res.json(result)
     })
-  }
-
-  const noteToUpdate = notes.findIndex((note) => note.id === id)
-
-  notes[noteToUpdate].important = body.important
-
-  res.status(200).json(notes)
+    .catch(error => next(error))
 })
 
-app.use((err, req, res, next) => {
-  console.error(err)
-  if (err.name === 'CastError') {
-    res.status(400).end()
-  } else {
-    res.status(500).end()
-  }
+app.use(notFound)
+
+app.use(errorHandler)
+
+const PORT = process.env.PORT || 3001
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
 })
 
-const PORT = process.env.PORT
-
-app.listen(PORT, () => {
-  console.log(`Server runing on port ${PORT}`)
-})
+module.exports = { app, server }
