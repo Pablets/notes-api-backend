@@ -10,18 +10,19 @@ GET http://localhost:3001/api/notes/605bef7921647333073254b3
 ###
 # Delete a single note by id PRIVATE
 
-DELETE http://localhost:3001/api/notes/605cb90073180e08bb2820b6 HTTP/1.1
+DELETE http://localhost:3001/api/notes/6088eaadb2c3b735a6afdcc6 HTTP/1.1
 
 ###
 # Create a note
 
-POST http://localhost:3001/api/notes HTTP/1.1
+POST http://localhost:3001/api/notes
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwOGFiMTI0ZWFkN2VmMGNmNWNkMTg1YyIsInVzZXJuYW1lIjoicGFibGV0cyIsImlhdCI6MTYxOTcwMjA3M30.HlkGTPfbQqqcST1IRijdSsEe5ZWSowYRxL7OSnkvmdU
 
 {
-    "content":"asdadddd"
+    "content": "Otra nota importante",
+    "important": true
 }
-
 
 ###
 # Update a note

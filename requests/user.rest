@@ -1,0 +1,15 @@
+# Get all users ADMIN
+
+GET http://localhost:3001/api/users
+
+###
+# Create new user PUBLIC
+
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+    "username": "pablets",
+    "name": "Pablo",
+    "password": "afrastraslafra"
+}
