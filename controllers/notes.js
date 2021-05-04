@@ -32,10 +32,6 @@ notesRouter.post('/', userExtractor, async (req, res, next) => {
     user: user._id,
   })
 
-  // newNote.save().then(savedNote => {
-  //   res.json(savedNote)
-  // }).catch(err => next(err))
-
   try {
     const savedNote = await newNote.save()
 
